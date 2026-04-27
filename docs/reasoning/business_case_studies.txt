@@ -1,0 +1,99 @@
+ML Business Case Studies and Lessons Learned
+=============================================
+
+Case Study 1: Netflix Recommendation Engine
+Business impact: Netflix estimates its recommendation system saves over $1 billion
+per year in customer retention by reducing churn.
+Technical approach: Collaborative filtering (what similar users watched) combined
+with content-based features (genre, actors, themes) and contextual signals
+(time of day, device type, how the user found the title).
+Key lessons:
+- A 1% improvement in recommendation relevance at scale = massive revenue
+- Measuring watch time and completion rate matters more than star ratings
+- The thumbnail image shown influences clicks more than the algorithm in some cases
+- Personalizing the homepage layout (not just titles) doubled engagement
+
+Case Study 2: Amazon Demand Forecasting
+Business impact: Reduced excess inventory costs by 30%, improved delivery speed,
+reduced stockouts on fast-moving products.
+Technical approach: Hierarchical time series forecasting across millions of SKUs.
+Models account for seasonality, promotions, weather, and regional differences.
+Amazon uses DeepAR, a probabilistic forecasting model built on recurrent neural networks.
+Key lessons:
+- Forecasting demand 6-8 weeks out allows smarter warehouse stocking decisions
+- Probabilistic forecasts (give a range, not a point estimate) are more useful
+  than point forecasts for inventory decisions
+- The business process around the model matters as much as the model itself
+
+Case Study 3: Fraud Detection at PayPal
+Business impact: Reduced fraud losses by 50% while increasing approval rates
+for legitimate transactions (reducing false positives).
+Technical approach: Real-time scoring of every transaction within 300ms using
+gradient boosting. Features include transaction amount, location, device fingerprint,
+time patterns, and network graph of related accounts.
+Key lessons:
+- Error costs are asymmetric: missing fraud is very expensive, but so is
+  blocking legitimate customers. Define acceptable tradeoffs explicitly.
+- Fraudsters adapt to your model. Continuous retraining is mandatory.
+- Graph features (is this account connected to known fraud accounts?) are
+  among the most predictive features.
+
+Case Study 4: Uber Surge Pricing
+Business impact: Surge pricing increases driver supply during peak demand,
+reducing wait times by 50% and increasing platform revenue.
+Technical approach: Real-time supply/demand forecasting by geographic zone.
+Gradient boosting predicts demand 5-15 minutes ahead. Price elasticity models
+determine optimal multiplier.
+Key lessons:
+- ML-driven dynamic pricing requires careful communication to users to avoid backlash
+- The model must be explainable enough for customer service to handle complaints
+- Feedback loops matter: higher prices attract more drivers which reduces surge,
+  which must be accounted for in the model
+
+Common ML Project Failure Modes:
+1. Solving the wrong problem
+Building a model for a problem that doesn't need ML. A pricing analyst manually
+adjusts prices and is 85% accurate. You build an ML model that is 87% accurate.
+The 2% improvement doesn't justify the engineering cost and risk.
+Always ask: what is the baseline, and is ML necessary to beat it?
+
+2. Data leakage
+Using information in training that would not be available at prediction time.
+Example: predicting loan default using a credit bureau feature that is only
+pulled after a default occurs. Model looks great in testing, collapses in production.
+Prevention: strictly simulate the exact information available at prediction time.
+
+3. No monitoring after deployment
+Models degrade over time as the world changes. Customer behavior shifts,
+product catalog changes, seasonality introduces new patterns.
+Without monitoring you won't know until something goes badly wrong.
+Every production model needs: input distribution monitoring, prediction distribution
+monitoring, and business KPI tracking.
+
+4. Ignoring deployment complexity
+A model in a Jupyter notebook is not a product. Deployment requires an API,
+input validation, logging, versioning, rollback capability, and documentation.
+Data scientists who can't deploy their own models create bottlenecks.
+
+5. Lack of stakeholder alignment
+Model is built to optimize a metric that stakeholders don't care about.
+Always define success metrics with stakeholders before modeling, not after.
+
+How to Build the Business Case for an ML Project:
+Step 1: Quantify the current cost of the problem
+"We lose $2M per year to fraud that manual review misses."
+
+Step 2: Estimate the improvement ML can achieve
+"Based on similar problems at other companies, we expect 40-60% reduction."
+
+Step 3: Calculate expected value
+"Conservative estimate: $800K saved per year."
+
+Step 4: Estimate project cost
+"3 months of 2 data scientists + infrastructure = $300K."
+
+Step 5: Calculate ROI
+"Year 1 ROI: ($800K - $300K) / $300K = 167%. Payback in 4.5 months."
+
+Step 6: Define the pilot
+"We will run a 6-week pilot on 10% of transactions before full rollout."

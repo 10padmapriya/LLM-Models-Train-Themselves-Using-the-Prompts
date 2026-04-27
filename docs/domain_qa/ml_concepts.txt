@@ -1,0 +1,73 @@
+Core Machine Learning Concepts
+================================
+
+Supervised vs Unsupervised Learning:
+Supervised learning uses labeled examples to train a model.
+The model learns to map inputs to outputs by minimizing prediction error.
+Examples: classification (spam/not spam), regression (predict house price).
+
+Unsupervised learning finds patterns in unlabeled data.
+The model discovers structure on its own without being told the answer.
+Examples: clustering customers by behavior, anomaly detection, topic modeling.
+
+Overfitting and Underfitting:
+Overfitting occurs when a model memorizes the training data including its noise,
+and fails to generalize to new examples.
+Signs: very high training accuracy, much lower test accuracy.
+Solutions: more data, regularization (L1/L2), simpler model, dropout, early stopping.
+
+Underfitting occurs when a model is too simple to capture the underlying pattern.
+Signs: low accuracy on both training and test sets.
+Solutions: more complex model, better features, less regularization, more training.
+
+The Bias-Variance Tradeoff:
+Bias: Error from wrong assumptions in the model. High bias = underfitting.
+Variance: Error from sensitivity to small fluctuations in training data. High variance = overfitting.
+Total Error = Bias^2 + Variance + Irreducible Noise
+Goal: find the model complexity that minimizes total error.
+
+Cross-Validation:
+K-fold cross-validation splits data into K subsets (folds).
+The model trains on K-1 folds and validates on the held-out fold, rotating K times.
+Final score is the average across all K runs.
+This gives a more reliable estimate of generalization than a single train/test split.
+Common choice: K=5 or K=10.
+
+Regularization Techniques:
+L1 (Lasso): Adds the sum of absolute values of weights to the loss function.
+Effect: Drives some weights to exactly zero, performing automatic feature selection.
+Use when: You suspect many features are irrelevant.
+
+L2 (Ridge): Adds the sum of squared weights to the loss function.
+Effect: Shrinks all weights toward zero but rarely eliminates them completely.
+Use when: All features may be relevant but you want to prevent large weights.
+
+Gradient Descent:
+The optimization algorithm that trains most ML models.
+Steps:
+1. Initialize weights randomly
+2. Calculate loss (prediction error) on training data
+3. Compute the gradient (direction of steepest increase in loss)
+4. Update weights in the opposite direction: w = w - learning_rate * gradient
+5. Repeat until loss converges
+
+Learning rate too high: training is unstable, loss oscillates or diverges.
+Learning rate too low: training is very slow, may get stuck in local minima.
+
+Ensemble Methods:
+Bagging (Bootstrap Aggregating): Train many models on random subsets of data,
+average their predictions. Reduces variance. Example: Random Forest.
+
+Boosting: Train models sequentially, each one correcting the errors of the previous.
+Reduces bias. Examples: XGBoost, LightGBM, AdaBoost.
+
+Stacking: Train a meta-model on the predictions of base models.
+Often achieves the best accuracy but is complex to implement and interpret.
+
+Feature Importance:
+Understanding which features drive predictions is critical for business trust.
+Methods:
+- Permutation importance: shuffle a feature and measure accuracy drop
+- SHAP values: game-theoretic approach, works for any model
+- Tree-based importance: built into Random Forest and XGBoost
+- Coefficient magnitude: for linear models

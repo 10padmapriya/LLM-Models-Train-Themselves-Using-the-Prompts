@@ -1,0 +1,20 @@
+# Core LLM & RAG
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-openai==0.1.23
+langchain-core==0.2.38
+langchain-text-splitters==0.2.4
+openai==1.44.0
+
+# Vector store
+chromadb==0.5.5
+
+# MLOps
+mlflow==2.16.0
+
+# Drift detection & numerics
+scipy==1.14.1
+numpy==1.26.4
+
+# Utilities
+python-dotenv==1.0.1

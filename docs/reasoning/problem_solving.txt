@@ -1,0 +1,98 @@
+Structured Problem Solving and Critical Thinking for Data Science
+=================================================================
+
+The Hypothesis-Driven Approach:
+Instead of open-ended exploration, start with a clear hypothesis then test it.
+This is how the best data scientists and consultants work.
+
+Steps:
+1. State the business problem clearly: "Why did Q3 revenue drop 12%?"
+2. Form a hypothesis: "Churn increased in the enterprise segment"
+3. Define what data would prove or disprove this
+4. Collect and analyze only that data
+5. Confirm, reject, or refine the hypothesis
+6. Repeat until root cause is identified
+
+This is faster than exploring all data hoping to find something interesting.
+Exploration is useful at the start; hypothesis testing is useful when you
+have a specific question to answer.
+
+The MECE Framework (Mutually Exclusive, Collectively Exhaustive):
+Used to structure any complex problem so nothing is missed and nothing overlaps.
+Mutually Exclusive: Each category is distinct with no overlap
+Collectively Exhaustive: Together the categories cover everything
+
+Example: Diagnosing a drop in ML model accuracy:
+1. Data issues (schema change, pipeline bug, drift in input distribution)
+2. Model issues (hyperparameter drift, feature importance shift)
+3. Environment issues (library version change, hardware differences)
+4. Labeling issues (ground truth definition changed)
+Every possible cause falls into exactly one category.
+
+Root Cause Analysis - The 5 Whys:
+Keep asking why until you reach the actual root cause, not just a symptom.
+
+Problem: Model accuracy dropped by 15% last week
+Why 1: The training data quality decreased
+Why 2: A new data source introduced missing values
+Why 3: The data vendor changed their API schema
+Why 4: There was no schema validation in the ingestion pipeline
+Why 5: The deployment process had no automated data quality checks
+
+Root cause: No automated data validation in the CI/CD pipeline
+Fix: Add Great Expectations or Pandera schema checks to the pipeline
+This fix prevents the entire class of similar problems, not just this one.
+
+Second-Order Thinking:
+Always ask "and then what happens?" beyond the immediate effect.
+
+Scenario: Retrain model more frequently to reduce drift
+First order: Model stays more up to date with recent patterns
+Second order: More retraining means more compute costs and engineering time
+Third order: Higher costs may not be justified if accuracy gain is marginal
+Better solution: Implement drift monitoring and only retrain when drift is detected
+
+Defining the Right Metric:
+Choosing the wrong success metric leads to solving the wrong problem.
+
+Common mistakes:
+- Optimizing accuracy on imbalanced data (1% fraud rate: predict all legit = 99% accuracy)
+- Using RMSE when large errors are not proportionally more costly than small ones
+- Measuring model performance in isolation from business impact
+
+Ask these questions:
+1. What decision will this model inform?
+2. What is the cost of a false positive vs false negative?
+3. How does a 1% improvement in the metric translate to business value?
+4. Is this metric gameable in ways that harm the actual goal?
+
+Communicating Findings to Non-Technical Stakeholders:
+The best analysis is worthless if it cannot be communicated clearly.
+
+Structure every presentation as:
+1. Situation: What is the current state and why does this matter?
+2. Complication: What problem or question has arisen?
+3. Resolution: What did you find and what should we do?
+
+Rules:
+- Lead with the conclusion, not the methodology
+- Use one chart per insight, not one chart with all insights
+- Round numbers to what is meaningful (say "about 30%" not "28.7%")
+- Anticipate the "so what?" question for every slide
+- Never show a confusion matrix to a business audience; translate it to dollars
+
+Avoiding Common Analytical Mistakes:
+Correlation vs causation: Ice cream sales and drowning deaths are correlated.
+Do not conclude that ice cream causes drowning. Both increase in summer.
+Always ask: is there a confounding variable explaining both trends?
+
+Survivorship bias: Studying only successful companies to learn what makes
+companies successful ignores the failed companies with the same traits.
+Always consider what is missing from your dataset.
+
+P-hacking: Running many statistical tests and only reporting the significant ones.
+If you test 20 hypotheses at p<0.05, one will be significant by chance.
+Correct for multiple comparisons or pre-register your hypotheses.
+
+Overfitting your story: Fitting a narrative too precisely to one dataset.
+Always validate your conclusions on a holdout set or with new data.

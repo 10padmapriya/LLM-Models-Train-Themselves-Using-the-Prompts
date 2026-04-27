@@ -1,0 +1,167 @@
+Python Best Practices for Data Science Projects
+=======================================
+
+Project Structure:
+    my_ml_project/
+    ├── data/
+    │   ├── raw/            # Original, immutable data - never edit this
+    │   ├── processed/      # Cleaned and transformed data
+    │   └── external/       # Third-party or reference data
+    ├── notebooks/          # Jupyter notebooks for exploration only
+    ├── src/
+    │   ├── data/           # Scripts to load and clean data
+    │   ├── features/       # Feature engineering functions
+    │   ├── models/         # Training, prediction, evaluation
+    │   └── visualization/  # Reusable plotting functions
+    ├── tests/              # Unit tests for src/ functions
+    ├── models/             # Saved model artifacts (.pkl files)
+    ├── reports/            # Generated reports, figures
+    ├── requirements.txt    # Pinned dependencies
+    ├── .env                # Secrets (never commit this)
+    ├── .gitignore          # Exclude data/, models/, .env
+    └── README.md
+
+Writing Clean, Reusable Functions:
+    import pandas as pd
+    import numpy as np
+    from typing import Tuple, List, Optional
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    def load_and_validate(
+        filepath: str,
+        required_columns: List[str],
+        date_cols: Optional[List[str]] = None
+    ) -> pd.DataFrame:
+        """
+        Load CSV and validate required columns exist.
+
+        Args:
+            filepath: Path to the CSV file
+            required_columns: Columns that must be present
+            date_cols: Columns to parse as datetime
+
+        Returns:
+            Validated DataFrame
+
+        Raises:
+            ValueError: If required columns are missing
+        """
+        df = pd.read_csv(filepath, parse_dates=date_cols or [])
+
+        missing = set(required_columns) - set(df.columns)
+        if missing:
+            raise ValueError(f"Missing required columns: {missing}")
+
+        logger.info(f"Loaded {len(df)} rows from {filepath}")
+        return df
+
+    def split_features_target(
+        df: pd.DataFrame,
+        target_col: str,
+        drop_cols: Optional[List[str]] = None
+    ) -> Tuple[pd.DataFrame, pd.Series]:
+        """Split dataframe into features X and target y."""
+        df = df.copy()  # Never mutate the original
+        if drop_cols:
+            df = df.drop(columns=drop_cols, errors='ignore')
+        y = df.pop(target_col)
+        return df, y
+
+Environment and Dependency Management:
+    # Always use virtual environments - never install globally
+    python -m venv venv
+    source venv/bin/activate    # Mac/Linux
+    venv\Scripts\activate       # Windows
+
+    # Install dependencies
+    pip install -r requirements.txt
+
+    # Pin exact versions for reproducibility
+    pip freeze > requirements.txt
+
+    # Load secrets from .env file, never hardcode
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+    api_key = os.getenv('OPENAI_API_KEY')
+    db_password = os.getenv('DB_PASSWORD')
+
+Logging Instead of Print Statements:
+    import logging
+
+    # Configure at the top of your main script
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+        handlers=[
+            logging.FileHandler('pipeline.log'),
+            logging.StreamHandler()  # Also print to console
+        ]
+    )
+    logger = logging.getLogger(__name__)
+
+    # Use throughout your code
+    logger.info(f"Training started with {len(X_train)} samples")
+    logger.warning(f"High missing rate in column: {col} ({pct:.1%})")
+    logger.error(f"Model training failed: {e}", exc_info=True)
+
+Writing Unit Tests:
+    # tests/test_features.py
+    import pytest
+    import pandas as pd
+    from src.features.engineering import create_date_features
+
+    def test_create_date_features_adds_expected_columns():
+        df = pd.DataFrame({'date': pd.to_datetime(['2024-01-15', '2024-07-04'])})
+        result = create_date_features(df, 'date')
+        assert 'year' in result.columns
+        assert 'month' in result.columns
+        assert 'day_of_week' in result.columns
+
+    def test_create_date_features_correct_values():
+        df = pd.DataFrame({'date': pd.to_datetime(['2024-01-15'])})
+        result = create_date_features(df, 'date')
+        assert result['month'].iloc[0] == 1
+        assert result['year'].iloc[0] == 2024
+
+    # Run tests: pytest tests/ -v
+
+Reproducibility Best Practices:
+    import random
+    import numpy as np
+
+    RANDOM_SEED = 42
+
+    # Set seeds everywhere
+    random.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
+
+    # Use in sklearn
+    from sklearn.ensemble import RandomForestClassifier
+    model = RandomForestClassifier(random_state=RANDOM_SEED)
+
+    # Use in train_test_split
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=RANDOM_SEED
+    )
+
+Common Mistakes to Avoid:
+    # BAD: Fitting scaler on all data (data leakage)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)  # Leaks test info into training
+    X_train, X_test = train_test_split(X_scaled, ...)
+
+    # GOOD: Fit on train only, transform both
+    X_train, X_test, y_train, y_test = train_test_split(X, y, ...)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)  # Fit on train
+    X_test_scaled = scaler.transform(X_test)         # Transform test
+
+    # EVEN BETTER: Use sklearn Pipeline (handles this automatically)
+    from sklearn.pipeline import Pipeline
+    pipeline = Pipeline([('scaler', StandardScaler()), ('model', model)])
+    pipeline.fit(X_train, y_train)  # Only fits scaler on X_train internally
+    pipeline.score(X_test, y_test)  # Correctly transforms X_test

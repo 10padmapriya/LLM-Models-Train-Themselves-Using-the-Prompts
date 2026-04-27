@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/padmapriyavenkatesh/Downloads/llm-self-training/mlruns/977040650095363724/082a5ab951174d65b2a4410bee882667/artifacts
+end_time: 1777311567471
+entry_point_name: ''
+experiment_id: '977040650095363724'
+lifecycle_stage: active
+run_id: 082a5ab951174d65b2a4410bee882667
+run_name: iteration_1
+run_uuid: 082a5ab951174d65b2a4410bee882667
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777311567447
+status: 3
+tags: []
+user_id: padmapriyavenkatesh
